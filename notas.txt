@@ -11,8 +11,10 @@ python manage.py runserver
 --------------------------------------------------------------
 git push
 
-git add catalogo/models.py configuracion/settings.py
-git commit -m "******"
+python manage.py makemigrations
+python manage.py migrate
+git add .
+git commit -m "*****"
 git push origin main
 
 bash 
