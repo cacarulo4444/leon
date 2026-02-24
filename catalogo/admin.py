@@ -1,7 +1,9 @@
 # catalogo/admin.py
 from django.contrib import admin
 from .models import Categoria, Producto, ConfiguracionSitio, Pedido, DetallePedido
+from .models import Talle # Importalo
 
+admin.site.register(Talle)
 # Esto hace que veas los productos adentro del mismo pedido
 class DetallePedidoInline(admin.TabularInline):
     model = DetallePedido

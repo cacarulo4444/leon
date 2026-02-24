@@ -6,3 +6,18 @@ cd C:\emi\leon
 env\Scripts\activate     ----------- (ENV)
 
 python manage.py runserver
+
+
+--------------------------------------------------------------
+git push
+
+git add catalogo/models.py configuracion/settings.py
+git commit -m "******"
+git push origin main
+
+bash 
+
+
+cd leon
+git pull origin main
+--------------------------------------------------------------

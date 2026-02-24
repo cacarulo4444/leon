@@ -1,18 +1,28 @@
 import os
 from django.db import models
 
-# Función para organizar las fotos en subcarpetas por categoría
+# 1. FUNCIÓN PARA RUTAS DINÁMICAS (Arreglada para no crear carpetas extra)
 def ruta_dinamica_categoria(instance, filename):
+    # Toma el nombre de la categoría o usa 'sin_categoria'
     categoria_nombre = instance.categoria.nombre if instance.categoria else 'sin_categoria'
-    # QUITAMOS 'productos' de aquí abajo:
+    # Retorna solo categoria/nombre_archivo.jpg (Django lo meterá en /productos/ por el settings.py)
     return os.path.join(categoria_nombre, filename)
 
+# 2. MODELO CATEGORIA
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
 
     def __str__(self):
         return self.nombre
 
+# 3. MODELO TALLE (Definido AQUÍ arriba para que Producto lo reconozca)
+class Talle(models.Model):
+    nombre = models.CharField(max_length=50, help_text="Ej: S, M, L o 42, 44")
+
+    def __str__(self):
+        return self.nombre
+
+# 4. MODELO PRODUCTO
 class Producto(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
@@ -21,29 +31,30 @@ class Producto(models.Model):
     # Relación con categoría
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, null=True, blank=True)
     
-    # Usamos la función de ruta dinámica aquí
+    # Relación con talles (Muchos a Muchos)
+    talles = models.ManyToManyField(Talle, blank=True, help_text="Seleccioná los talles disponibles")
+    
+    # Imagen con la ruta corregida
     imagen = models.ImageField(upload_to=ruta_dinamica_categoria, null=True, blank=True)
     
-    # Campo clave para la pestaña de OFERTAS
+    # Campo para Ofertas
     en_oferta = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nombre
 
+# 5. CONFIGURACIÓN DEL SITIO
 class ConfiguracionSitio(models.Model):
     nombre_empresa = models.CharField(
         max_length=100, 
         default="TU MARCA", 
-        help_text="Nombre que se mostrará en el encabezado con tipografía urbana."
+        help_text="Nombre que se mostrará en el encabezado."
     )
-    # --- NUEVOS CAMPOS DE CONTACTO E INFO ---
     whatsapp = models.CharField(max_length=20, blank=True, null=True, help_text="Ej: +5491123456789")
     email = models.EmailField(blank=True, null=True, help_text="Ej: ventas@tumarca.com")
-    texto_informacion = models.TextField(blank=True, null=True, help_text="Detalles de talles, envíos, etc. (Podés usar Enter para separar párrafos)")
+    texto_informacion = models.TextField(blank=True, null=True, help_text="Info de envíos, talles, etc.")
 
     def save(self, *args, **kwargs):
-        # Esto asegura que solo exista UN registro de configuración.
-        # Si tratas de crear otro, sobrescribe el primero.
         self.pk = 1
         super(ConfiguracionSitio, self).save(*args, **kwargs)
 
@@ -53,8 +64,8 @@ class ConfiguracionSitio(models.Model):
     class Meta:
         verbose_name = "Configuración del Sitio"
         verbose_name_plural = "Configuración del Sitio"
-    # catalogo/models.py (al final del archivo)
 
+# 6. MODELOS DE PEDIDOS
 class Pedido(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
@@ -71,6 +82,8 @@ class DetallePedido(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.SET_NULL, null=True)
     cantidad = models.IntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    # Agregamos campo de talle al detalle para que quede registrado qué talle compraron
+    talle_elegido = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.cantidad} x {self.producto.nombre if self.producto else 'Producto Eliminado'}"
+        return f"{self.cantidad} x {self.producto.nombre if self.producto else 'Eliminado'} ({self.talle_elegido})"
