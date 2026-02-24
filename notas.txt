@@ -1,0 +1,8 @@
+PRENDER EL SERVIDOR
+
+
+cd C:\emi\leon
+
+env\Scripts\activate     ----------- (ENV)
+
+python manage.py runserver

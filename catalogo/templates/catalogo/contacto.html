@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Contacto - {{ nombre_empresa }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --oneui-bg: #000; --oneui-card: #1c1c1e; }
+        body { background: var(--oneui-bg); color: #fff; font-family: 'Inter', sans-serif; }
+        .letra-trap { font-family: 'Permanent Marker', cursive; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; transform: skewX(-5deg); text-shadow: 2px 2px 0px #ff0000; }
+        .oneui-nav { background: rgba(0,0,0,0.9); backdrop-filter: blur(25px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .tabs-container { display: flex; gap: 20px; padding: 10px 20px; overflow-x: auto; scrollbar-width: none; }
+        .nav-tab { color: #888; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; padding-bottom: 5px; border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .nav-tab:hover { color: #fff; }
+        .nav-tab.active { color: #ff0000; border-bottom: 2px solid #ff0000; }
+    </style>
+</head>
+<body class="pb-10">
+
+    <nav class="oneui-nav sticky top-0 z-50 mb-6">
+        <div class="flex justify-between items-center p-4">
+            <a href="{% url 'inicio' %}" class="letra-trap text-white">{{ nombre_empresa|default:"TU MARCA" }}</a>
+            <a href="{% url 'ver_carrito' %}" class="bg-[#1c1c1e] rounded-[28px] border border-white/5 px-5 py-2 flex items-center gap-3 active:scale-95 transition-transform">
+                <span class="text-sm font-bold uppercase tracking-wider">Pedido</span>
+                <div class="bg-[#ff0000] text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full">{{ total_unidades|default:"0" }}</div>
+            </a>
+        </div>
+        <div class="tabs-container">
+            <a href="{% url 'inicio' %}" class="nav-tab {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}">Tienda</a>
+            <a href="{% url 'ofertas' %}" class="nav-tab {% if request.resolver_match.url_name == 'ofertas' %}active{% endif %}">Ofertas</a>
+            <a href="{% url 'contacto' %}" class="nav-tab {% if request.resolver_match.url_name == 'contacto' %}active{% endif %}">Contactanos</a>
+            <a href="{% url 'informacion' %}" class="nav-tab {% if request.resolver_match.url_name == 'informacion' %}active{% endif %}">Información</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 mt-10 max-w-2xl">
+        <div class="bg-[#1c1c1e] rounded-[32px] p-10 border border-white/5 shadow-2xl text-center">
+            <h1 class="letra-trap mb-10">CONTACTANOS</h1>
+            
+            {% if whatsapp_empresa %}
+            <div class="mb-6 p-6 bg-[#111] rounded-2xl border border-white/5">
+                <p class="text-[10px] font-black text-[#a1a1a6] uppercase tracking-widest mb-2">WhatsApp Directo</p>
+                <a href="https://wa.me/{{ whatsapp_empresa|cut:'+'|cut:' ' }}" target="_blank" class="text-2xl font-black text-white hover:text-[#ff0000] transition-colors">{{ whatsapp_empresa }}</a>
+            </div>
+            {% endif %}
+
+            {% if email_empresa %}
+            <div class="p-6 bg-[#111] rounded-2xl border border-white/5">
+                <p class="text-[10px] font-black text-[#a1a1a6] uppercase tracking-widest mb-2">Correo Electrónico</p>
+                <a href="mailto:{{ email_empresa }}" class="text-xl font-bold text-white hover:text-[#ff0000] transition-colors">{{ email_empresa }}</a>
+            </div>
+            {% endif %}
+
+            {% if not whatsapp_empresa and not email_empresa %}
+            <p class="text-[#a1a1a6] italic">Todavía no hay canales de contacto configurados.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

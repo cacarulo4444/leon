@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedido - One UI 8</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --oneui-bg: #000000; --oneui-card: #1c1c1e; }
+        body { background-color: var(--oneui-bg); color: white; font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
+        .oneui-list-item { background-color: var(--oneui-card); border-radius: 24px; margin-bottom: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .btn-confirm { background-color: #ff0000; color: white; border-radius: 28px; font-weight: 800; }
+    </style>
+</head>
+<body class="min-h-screen py-10 px-6">
+
+    <div class="container mx-auto max-w-2xl">
+        <header class="flex justify-between items-center mb-10">
+            <h1 class="text-3xl font-extrabold tracking-tighter uppercase">Tu Pedido</h1>
+            <a href="{% url 'inicio' %}" class="text-[#a1a1a6] font-semibold hover:text-white transition-colors">Cerrar</a>
+        </header>
+
+        <div class="space-y-3">
+            {% if request.session.carrito.items %}
+                {% for key, value in request.session.carrito.items %}
+                <div class="oneui-list-item p-6 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-1">{{ value.nombre }}</h3>
+                        <p class="text-sm text-[#a1a1a6] font-medium">Cantidad: <span class="text-white">{{ value.cantidad }}</span></p>
+                    </div>
+                    <div class="text-right flex flex-col items-end gap-2">
+                        <p class="text-xl font-black text-[#ff0000]">${{ value.acumulado|floatformat:2 }}</p>
+                        <a href="{% url 'eliminar' value.producto_id %}" class="text-[10px] text-[#a1a1a6] hover:text-[#ff0000] uppercase font-bold tracking-widest border border-white/10 px-2 py-1 rounded-lg transition-colors">
+                            Eliminar X
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="mt-10 bg-[#1c1c1e] rounded-[32px] p-8 flex justify-between items-center shadow-xl border border-white/5">
+                    <div>
+                        <p class="text-sm font-bold text-[#a1a1a6] uppercase tracking-widest">Total Estimado</p>
+                        <p class="text-4xl font-black text-white">${{ total_precio|floatformat:2|default:"0.00" }}</p>
+                    </div>
+                    <a href="{% url 'procesar_pedido' %}" class="btn-confirm px-8 py-4 uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-transform inline-block text-center">
+                    Confirmar
+                    </a>
+                    </button>
+                </div>
+            {% else %}
+                <div class="text-center py-20 bg-[#1c1c1e] rounded-[32px] border border-dashed border-white/10">
+                    <p class="text-[#a1a1a6] font-medium italic">No hay productos en el pedido.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ producto.nombre }} - Tienda Emi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --oneui-bg: #000000; --oneui-card: #1c1c1e; }
+        body { background-color: var(--oneui-bg); color: white; font-family: 'Inter', sans-serif; }
+        .oneui-card { background-color: var(--oneui-card); border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .btn-confirm { background-color: #ffffff; color: #000000; border-radius: 24px; font-weight: 800; transition: all 0.3s; }
+        .btn-confirm:active { transform: scale(0.95); background-color: #ff0000; color: white; }
+    </style>
+</head>
+<body class="py-10 px-6">
+    <div class="container mx-auto max-w-4xl">
+        <a href="{% url 'inicio' %}" class="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-[#1c1c1e] text-[#a1a1a6] text-sm font-semibold">
+            &larr; Volver
+        </a>
+
+        <div class="oneui-card overflow-hidden flex flex-col md:flex-row shadow-2xl">
+            <div class="md:w-1/2 bg-[#111] p-8 flex items-center justify-center">
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="max-w-full h-auto rounded-2xl">
+                {% endif %}
+            </div>
+
+            <div class="md:w-1/2 p-10 flex flex-col justify-center">
+                <span class="text-[#ff0000] text-xs font-bold uppercase tracking-widest mb-2">{{ producto.categoria.nombre }}</span>
+                <h1 class="text-4xl font-extrabold mb-4 tracking-tight leading-tight">{{ producto.nombre }}</h1>
+                
+                <p class="text-[#a1a1a6] text-lg leading-relaxed mb-6">{{ producto.descripcion }}</p>
+                
+                <p class="text-5xl font-black text-white mb-8">${{ producto.precio|floatformat:2 }}</p>
+
+                <form action="{% url 'agregar' producto.id %}" method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="bg-[#111] p-4 rounded-2xl border border-white/5 flex flex-col">
+                        <label class="text-[10px] font-black text-[#a1a1a6] uppercase tracking-widest mb-1">CANTIDAD</label>
+                        <input type="number" name="cantidad" value="1" min="1" 
+                               class="bg-transparent text-white text-3xl font-black outline-none w-full">
+                    </div>
+                    <button type="submit" class="btn-confirm w-full py-5 text-center uppercase tracking-widest text-sm shadow-xl">
+                        Agregar al Pedido
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
