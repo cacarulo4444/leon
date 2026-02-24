@@ -3,12 +3,9 @@ from django.db import models
 
 # Función para organizar las fotos en subcarpetas por categoría
 def ruta_dinamica_categoria(instance, filename):
-    # Obtenemos el nombre de la categoría del producto
-    # Si no tiene categoría asignada, lo manda a la carpeta 'sin_categoria'
     categoria_nombre = instance.categoria.nombre if instance.categoria else 'sin_categoria'
-    
-    # Retornamos la ruta: productos/NombreDeCategoria/nombre_archivo.jpg
-    return os.path.join('productos', categoria_nombre, filename)
+    # QUITAMOS 'productos' de aquí abajo:
+    return os.path.join(categoria_nombre, filename)
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
