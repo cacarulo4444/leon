@@ -13,6 +13,7 @@ ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost']
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -83,6 +84,38 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Configuración para las fotos de tus productos
 MEDIA_URL = '/media/'
+
+# --- CONFIGURACIÓN DE JAZZMIN (DISEÑO DEL ADMIN) ---
+JAZZMIN_SETTINGS = {
+    "site_title": "Admin Tienda",
+    "site_header": "Panel de Control",
+    "site_brand": "Tu Tienda",
+    "welcome_sign": "¡Bienvenido al panel de control, EmiDios!",
+    "copyright": "Desarrollado por devko",
+    
+    # Menú superior
+    "topmenu_links": [
+        {"name": "Ver Sitio Web",  "url": "/", "permissions": ["auth.view_user"]},
+    ],
+    
+    # Íconos para el menú lateral (Usa FontAwesome)
+    "icons": {
+        "catalogo.Producto": "fas fa-tshirt",
+        "catalogo.Categoria": "fas fa-tags",
+        "catalogo.Talle": "fas fa-ruler-horizontal",
+        "catalogo.Pedido": "fas fa-shopping-cart",
+        "catalogo.ConfiguracionSitio": "fas fa-cogs",
+    },
+    
+    # ESTO ES CLAVE: Te deja cambiar colores desde la misma web
+    "show_ui_builder": True,
+}
+
+# Tema por defecto (Oscuro con toques rojos para mantener tu estilo)
+JAZZMIN_UI_TWEAKS = {
+    "theme": "darkly",
+}
+
 # Aquí le decimos a Django que busque en la carpeta "productos" que tienes en la nube
 MEDIA_ROOT = os.path.join(BASE_DIR, 'productos')
 
