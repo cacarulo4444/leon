@@ -27,8 +27,9 @@ class DetallePedidoInline(admin.TabularInline):
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'fecha', 'total')
-    inlines = [DetallePedidoInline]
+    # Cambiamos 'fecha' por 'creado_en' para que coincida con el modelo
+    list_display = ('id', 'creado_en', 'nombre', 'apellido', 'total') 
+    list_filter = ('creado_en',)
 
 # 4. Registros simples
 admin.site.register(Categoria)

@@ -65,15 +65,18 @@ class ConfiguracionSitio(models.Model):
 
 # 6. MODELOS DE PEDIDOS
 class Pedido(models.Model):
-    fecha = models.DateTimeField(auto_now_add=True)
+    # Campos nuevos
+    nombre = models.TextField(max_length=100, default="")
+    apellido = models.TextField(max_length=100, default="")
+    telefono = models.TextField(max_length=20, default="")
+    direccion = models.TextField(max_length=255, blank=True, null=True) # Opcional
+    
+    # Tus campos anteriores (total, fecha, etc.)
     total = models.DecimalField(max_digits=10, decimal_places=2)
-
+    creado_en = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
-        return f"Pedido #{self.id} - {self.fecha.strftime('%d/%m/%Y')}"
-
-    class Meta:
-        verbose_name = "Pedido"
-        verbose_name_plural = "Pedidos"
+        return f"Pedido {self.id} - {self.nombre} {self.apellido}"
 
 class DetallePedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='detalles')

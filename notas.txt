@@ -9,17 +9,14 @@ python manage.py runserver
 
 
 --------------------------------------------------------------
-git push
+render
 
-python manage.py makemigrations
-python manage.py migrate
-git add .
-git commit -m "*****"
-git push origin main
+El Desafío de la Mudanza 🚀
+Como ya estamos en Render, acordate que cada vez que cambies un modelo (el paso 1), tenés que hacer el proceso de siempre:
 
-bash 
+python manage.py makemigrations y python manage.py migrate en tu compu.
 
+git add ., git commit y git push.
 
-cd leon
-git pull origin main
+Render va a detectar el cambio y, gracias a nuestro archivo build.sh, va a correr las migraciones automáticamente en la base de datos PostgreSQL.
 --------------------------------------------------------------
