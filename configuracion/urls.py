@@ -18,7 +18,10 @@ urlpatterns = [
     # --- RUTAS DEL CARRITO ---
     path('agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar'),
     path('carrito/', views.ver_carrito, name='ver_carrito'),
-    path('eliminar/<int:producto_id>/', views.eliminar_del_carrito, name='eliminar'),
+    
+    # ACÁ ESTÁ EL CAMBIO IMPORTANTE PARA BORRAR PRODUCTOS
+    path('eliminar/<str:clave>/', views.eliminar_del_carrito, name='eliminar'),
+    
     path('procesar-pedido/', views.procesar_pedido, name='procesar_pedido'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

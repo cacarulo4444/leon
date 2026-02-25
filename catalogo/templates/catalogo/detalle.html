@@ -12,6 +12,15 @@
         .oneui-card { background-color: var(--oneui-card); border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.05); }
         .btn-confirm { background-color: #ffffff; color: #000000; border-radius: 24px; font-weight: 800; transition: all 0.3s; }
         .btn-confirm:active { transform: scale(0.95); background-color: #ff0000; color: white; }
+
+        /* --- NUEVO CÓDIGO PARA EL DESPLEGABLE --- */
+        /* Esto asegura que cuando se abre, el fondo sea negro y la letra roja */
+        #selector-talle option {
+            background-color: #000000 !important;
+            color: #ff0000 !important;
+            font-weight: bold;
+        }
+        /* --- FIN NUEVO CÓDIGO --- */
     </style>
 </head>
 <body class="py-10 px-6">
@@ -35,8 +44,21 @@
                 
                 <p class="text-5xl font-black text-white mb-8">${{ producto.precio|floatformat:2 }}</p>
 
-                <form action="{% url 'agregar' producto.id %}" method="POST" class="space-y-6">
+                <form action="{% url 'agregar' producto.id %}" method="POST" class="space-y-6" onsubmit="if(document.getElementById('selector-talle') && document.getElementById('selector-talle').value == '') { alert('¡Epa! Seleccioná un talle primero.'); return false; }">
                     {% csrf_token %}
+                    
+                    {% if producto.talles.all %}
+                    <div class="bg-[#111] p-4 rounded-2xl border border-white/5 flex flex-col">
+                        <label class="text-[10px] font-black text-[#a1a1a6] uppercase tracking-widest mb-1">TALLE</label>
+                        <select name="talle" id="selector-talle" required class="bg-transparent text-[#ff0000] text-xl font-bold outline-none w-full border-b border-white/10 pb-2 cursor-pointer">
+                            <option value="">Seleccioná un talle...</option>
+                            {% for talle in producto.talles.all %}
+                                <option value="{{ talle.nombre }}">{{ talle.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+
                     <div class="bg-[#111] p-4 rounded-2xl border border-white/5 flex flex-col">
                         <label class="text-[10px] font-black text-[#a1a1a6] uppercase tracking-widest mb-1">CANTIDAD</label>
                         <input type="number" name="cantidad" value="1" min="1" 

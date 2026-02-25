@@ -1,12 +1,10 @@
 import os
 from django.db import models
 
-# 1. FUNCIÓN PARA RUTAS DINÁMICAS (Arreglada para no crear carpetas extra)
+# 1. FUNCIÓN PARA RUTAS DINÁMICAS (Arreglada para no crear subcarpetas)
 def ruta_dinamica_categoria(instance, filename):
-    # Toma el nombre de la categoría o usa 'sin_categoria'
-    categoria_nombre = instance.categoria.nombre if instance.categoria else 'sin_categoria'
-    # Retorna solo categoria/nombre_archivo.jpg (Django lo meterá en /productos/ por el settings.py)
-    return os.path.join(categoria_nombre, filename)
+    # Retorna SOLO el nombre del archivo para que Django lo guarde directo en MEDIA_ROOT
+    return filename
 
 # 2. MODELO CATEGORIA
 class Categoria(models.Model):

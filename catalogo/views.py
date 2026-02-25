@@ -40,7 +40,15 @@ def agregar_al_carrito(request, producto_id):
     
     if request.method == "POST":
         cantidad = request.POST.get("cantidad", 1)
-        carrito.agregar(producto, cantidad=int(cantidad))
+        talle = request.POST.get("talle") # Atrapamos el talle del HTML
+
+        # 🔒 EL CANDADO DE PYTHON: 
+        # Si el producto tiene talles en la base de datos, PERO el cliente no eligió ninguno
+        if producto.talles.exists() and not talle:
+            # Lo devolvemos a la misma página para que lo elija sí o sí
+            return redirect('detalle', producto_id=producto.id)
+
+        carrito.agregar(producto, cantidad=int(cantidad), talle=talle)
     else:
         carrito.agregar(producto)
         
@@ -55,10 +63,9 @@ def ver_carrito(request):
     }
     return render(request, 'catalogo/carrito.html', context)
 
-def eliminar_del_carrito(request, producto_id):
+def eliminar_del_carrito(request, clave):
     carrito = Carrito(request)
-    producto = get_object_or_404(Producto, id=producto_id)
-    carrito.eliminar(producto)
+    carrito.eliminar(clave)
     return redirect("ver_carrito") 
 
 def ofertas(request):
@@ -103,15 +110,20 @@ def procesar_pedido(request):
 
     for key, value in carrito.carrito.items():
         producto = Producto.objects.get(id=value['producto_id'])
+        talle_texto = value.get('talle') # Obtenemos el talle guardado
+        
         # Guardamos en la base de datos
         DetallePedido.objects.create(
             pedido=pedido,
             producto=producto,
             cantidad=value['cantidad'],
-            precio_unitario=producto.precio
+            precio_unitario=producto.precio,
+            talle_elegido=talle_texto
         )
+        
         # Sumamos al texto de WhatsApp
-        mensaje_wa += f"🔸 {value['cantidad']}x {value['nombre']} (${value['acumulado']})\n"
+        str_talle = f" (Talle: {talle_texto})" if talle_texto else ""
+        mensaje_wa += f"🔸 {value['cantidad']}x {value['nombre']}{str_talle} (${value['acumulado']})\n"
 
     mensaje_wa += f"\n*TOTAL: ${total_pedido}*\n\n¡Gracias!"
 
