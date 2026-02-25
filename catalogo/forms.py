@@ -6,8 +6,8 @@ class PedidoForm(forms.ModelForm):
         model = Pedido
         fields = ['nombre', 'apellido', 'telefono', 'direccion']
         widgets = {
-            'nombre': forms.TextInput(attrs={'placeholder': 'Tu nombre', 'class': 'oneui-input'}),
-            'apellido': forms.TextInput(attrs={'placeholder': 'Tu apellido', 'class': 'oneui-input'}),
-            'telefono': forms.TextInput(attrs={'placeholder': 'Ej: 11 1234 5678', 'class': 'oneui-input'}),
-            'direccion': forms.TextInput(attrs={'placeholder': 'Dirección (Opcional)', 'class': 'oneui-input'}),
+            'nombre': forms.TextInput(attrs={'class': 'w-full bg-black border border-white/10 rounded-xl p-4 text-white focus:border-[#ff0000] focus:ring-1 focus:ring-[#ff0000] outline-none transition-all', 'placeholder': 'Tu nombre'}),
+            'apellido': forms.TextInput(attrs={'class': 'w-full bg-black border border-white/10 rounded-xl p-4 text-white focus:border-[#ff0000] focus:ring-1 focus:ring-[#ff0000] outline-none transition-all', 'placeholder': 'Tu apellido'}),
+            'telefono': forms.TextInput(attrs={'class': 'w-full bg-black border border-white/10 rounded-xl p-4 text-white focus:border-[#ff0000] focus:ring-1 focus:ring-[#ff0000] outline-none transition-all', 'placeholder': 'Ej: 11 1234 5678'}),
+            'direccion': forms.TextInput(attrs={'class': 'w-full bg-black border border-white/10 rounded-xl p-4 text-white focus:border-[#ff0000] focus:ring-1 focus:ring-[#ff0000] outline-none transition-all', 'placeholder': 'Calle 123 (Opcional)'}),
         }

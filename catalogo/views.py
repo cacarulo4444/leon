@@ -3,6 +3,7 @@ import urllib.parse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Producto, Categoria, Pedido, DetallePedido, ConfiguracionSitio
 from .carrito import Carrito 
+from .forms import PedidoForm
 
 def inicio(request):
     carrito = Carrito(request)
@@ -98,50 +99,68 @@ def informacion(request):
 
 def procesar_pedido(request):
     carrito = Carrito(request)
+    
+    # Si el carrito está vacío, lo mandamos al inicio
     if not carrito.carrito:
-        return redirect('inicio') # Si está vacío, lo manda al inicio
-
-    # 1. Crear el Pedido en la Base de Datos
-    total_pedido = carrito.obtener_total_precio()
-    pedido = Pedido.objects.create(total=total_pedido)
-
-    # 2. Armar el mensaje para WhatsApp y guardar los detalles
-    mensaje_wa = f"¡Hola! 👋 Quiero confirmar mi Pedido #{pedido.id}:\n\n"
-
-    for key, value in carrito.carrito.items():
-        producto = Producto.objects.get(id=value['producto_id'])
-        talle_texto = value.get('talle') # Obtenemos el talle guardado
-        
-        # Guardamos en la base de datos
-        DetallePedido.objects.create(
-            pedido=pedido,
-            producto=producto,
-            cantidad=value['cantidad'],
-            precio_unitario=producto.precio,
-            talle_elegido=talle_texto
-        )
-        
-        # Sumamos al texto de WhatsApp
-        str_talle = f" (Talle: {talle_texto})" if talle_texto else ""
-        mensaje_wa += f"🔸 {value['cantidad']}x {value['nombre']}{str_talle} (${value['acumulado']})\n"
-
-    mensaje_wa += f"\n*TOTAL: ${total_pedido}*\n\n¡Gracias!"
-
-    # 3. Vaciar el carrito
-    carrito.limpiar()
-
-    # 4. Obtener el número de WhatsApp de la configuración
-    try:
-        conf = ConfiguracionSitio.objects.get(pk=1)
-        # Limpiamos el número por si le pusiste espacios o el '+'
-        numero_wa = conf.whatsapp.replace('+', '').replace(' ', '') if conf.whatsapp else ""
-    except ConfiguracionSitio.DoesNotExist:
-        numero_wa = ""
-
-    # 5. Redirigir a WhatsApp
-    if numero_wa:
-        mensaje_codificado = urllib.parse.quote(mensaje_wa)
-        return redirect(f"https://wa.me/{numero_wa}?text={mensaje_codificado}")
-    else:
-        # Si te olvidaste de cargar el número en el ABM, lo devuelve al inicio
         return redirect('inicio')
+
+    # Si el cliente ya completó el formulario y tocó "Finalizar Pedido"
+    if request.method == "POST":
+        form = PedidoForm(request.POST)
+        if form.is_valid():
+            
+            # 1. Guardamos los datos del cliente y el total
+            pedido = form.save(commit=False)
+            total_pedido = carrito.obtener_total_precio()
+            pedido.total = float(total_pedido)
+            pedido.save() # Guardamos en la base de datos
+
+            # 2. Armamos el mensaje para WhatsApp (Ahora sumamos los datos del cliente)
+            mensaje_wa = f"¡Hola! 👋 Quiero confirmar mi Pedido #{pedido.id}:\n"
+            mensaje_wa += f"👤 Nombre: {pedido.nombre} {pedido.apellido}\n"
+            mensaje_wa += f"📞 Teléfono: {pedido.telefono}\n"
+            if pedido.direccion:
+                mensaje_wa += f"📍 Dirección: {pedido.direccion}\n"
+            mensaje_wa += "\n🛒 *Mis Productos:*\n"
+
+            # 3. Guardamos los detalles (los talles) y sumamos al mensaje
+            for key, value in carrito.carrito.items():
+                producto = Producto.objects.get(id=value['producto_id'])
+                talle_texto = value.get('talle') 
+                
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    producto=producto,
+                    cantidad=value['cantidad'],
+                    precio_unitario=producto.precio,
+                    talle_elegido=talle_texto
+                )
+                
+                str_talle = f" (Talle: {talle_texto})" if talle_texto else ""
+                mensaje_wa += f"🔸 {value['cantidad']}x {value['nombre']}{str_talle} (${value['acumulado']})\n"
+
+            mensaje_wa += f"\n*TOTAL: ${total_pedido}*\n\n¡Gracias!"
+
+            # 4. Vaciar el carrito
+            carrito.limpiar()
+
+            # 5. Buscar el número de teléfono en la configuración
+            try:
+                conf = ConfiguracionSitio.objects.get(pk=1)
+                numero_wa = conf.whatsapp.replace('+', '').replace(' ', '') if conf.whatsapp else ""
+            except ConfiguracionSitio.DoesNotExist:
+                numero_wa = ""
+
+            # 6. Redirigir a WhatsApp (¡Esta es la línea esencial que faltaba!)
+            if numero_wa:
+                mensaje_codificado = urllib.parse.quote(mensaje_wa)
+                return redirect(f"https://wa.me/{numero_wa}?text={mensaje_codificado}")
+            else:
+                return redirect('inicio')
+                
+    # Si el cliente recién entra desde el carrito, le mostramos el formulario vacío
+    else:
+        form = PedidoForm()
+
+    # Le escupimos el HTML del formulario que armamos antes
+    return render(request, "catalogo/checkout.html", {"form": form})
