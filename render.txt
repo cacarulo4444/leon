@@ -1,0 +1,1 @@
+postgresql://dekvo_user:Iv3nFE7DHyBxIxvjB6Lui2MUmRtqCdW6@dpg-d6fj8ov5r7bs73dgq25g-a/dekvo
