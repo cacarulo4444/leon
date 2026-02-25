@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import os
+import dj_database_url
 
 # Directorio base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,12 +58,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'configuracion.wsgi.application'
 
 # Base de datos
+# Base de datos
+# Por defecto usamos SQLite3 en tu compu local
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# 🚀 EL TRUCO PARA RENDER: 
+# Si Render nos pasa una "DATABASE_URL" secreta, la usamos y pisamos la anterior
+database_url = os.environ.get("DATABASE_URL")
+if database_url:
+    DATABASES['default'] = dj_database_url.config(
+        default=database_url,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 
 # Validación de contraseñas
 AUTH_PASSWORD_VALIDATORS = [
