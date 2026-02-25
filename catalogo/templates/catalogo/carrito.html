@@ -2,61 +2,62 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedido - Tu Tienda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --oneui-bg: #000000; --oneui-card: #1c1c1e; }
         body { background-color: var(--oneui-bg); color: white; font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
-        .oneui-list-item { background-color: var(--oneui-card); border-radius: 24px; margin-bottom: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .btn-confirm { background-color: #ff0000; color: white; border-radius: 28px; font-weight: 800; }
+        .oneui-list-item { background-color: var(--oneui-card); border-radius: 20px; margin-bottom: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .btn-confirm { background-color: #ff0000; color: white; border-radius: 24px; font-weight: 800; }
     </style>
 </head>
-<body class="min-h-screen py-10 px-6">
+<body class="min-h-screen py-6 px-2 md:py-10 md:px-6">
 
     <div class="container mx-auto max-w-2xl">
-        <header class="flex justify-between items-center mb-10">
-            <h1 class="text-4xl md:text-3xl font-extrabold tracking-tighter uppercase">Tu Pedido</h1>
-            <a href="{% url 'inicio' %}" class="text-lg md:text-sm text-[#a1a1a6] font-semibold hover:text-white transition-colors">Cerrar</a>
+        <header class="flex justify-between items-center mb-6 md:mb-10 px-2 md:px-0">
+            <h1 class="text-3xl font-extrabold tracking-tighter uppercase">Tu Pedido</h1>
+            <a href="{% url 'inicio' %}" class="text-sm text-[#a1a1a6] font-semibold hover:text-white transition-colors">Cerrar</a>
         </header>
 
-        <div class="space-y-4 md:space-y-3">
+        <div class="space-y-3">
             {% if request.session.carrito.items %}
                 {% for key, value in request.session.carrito.items %}
                 
-                <div class="oneui-list-item p-6 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0">
+                <div class="oneui-list-item p-5 md:p-6 flex flex-row justify-between items-center">
                     <div class="w-full">
-                        <h3 class="text-3xl md:text-lg font-bold text-white mb-2 md:mb-1">
+                        <h3 class="text-xl md:text-lg font-bold text-white mb-1">
                             {{ value.nombre }}
                             {% if value.talle %}
-                                <span class="text-2xl md:text-sm font-black text-[#ff0000] ml-1">[{{ value.talle }}]</span>
+                                <span class="text-lg md:text-sm font-black text-[#ff0000] ml-1">[{{ value.talle }}]</span>
                             {% endif %}
                         </h3>
-                        <p class="text-xl md:text-sm text-[#a1a1a6] font-medium">Cantidad: <span class="text-white">{{ value.cantidad }}</span></p>
+                        <p class="text-sm text-[#a1a1a6] font-medium">Cantidad: <span class="text-white">{{ value.cantidad }}</span></p>
                     </div>
                     
-                    <div class="w-full md:w-auto flex flex-row md:flex-col items-center md:items-end justify-between gap-4 md:gap-2 mt-2 md:mt-0">
-                        <p class="text-4xl md:text-xl font-black text-[#ff0000]">${{ value.acumulado|floatformat:2 }}</p>
-                        <a href="{% url 'eliminar' key %}" class="text-lg md:text-[10px] text-[#a1a1a6] hover:text-[#ff0000] uppercase font-bold tracking-widest border border-white/10 px-6 py-4 md:px-2 md:py-1 rounded-lg transition-colors text-center">
+                    <div class="flex flex-col items-end gap-2">
+                        <p class="text-2xl md:text-xl font-black text-[#ff0000]">${{ value.acumulado|floatformat:2 }}</p>
+                        <a href="{% url 'eliminar' key %}" class="text-xs md:text-[10px] text-[#a1a1a6] hover:text-[#ff0000] uppercase font-bold tracking-widest border border-white/10 px-3 py-2 md:px-2 md:py-1 rounded-lg transition-colors">
                             Eliminar X
                         </a>
                     </div>
                 </div>
                 {% endfor %}
 
-                <div class="mt-10 bg-[#1c1c1e] rounded-[32px] p-8 md:p-10 flex flex-col md:flex-row gap-8 md:gap-6 justify-between items-stretch md:items-center shadow-xl border border-white/5">
+                <div class="mt-8 bg-[#1c1c1e] rounded-[24px] md:rounded-[32px] p-6 md:p-10 flex flex-col md:flex-row gap-6 justify-between items-stretch md:items-center shadow-xl border border-white/5">
                     <div class="text-center md:text-left">
-                        <p class="text-xl md:text-sm font-bold text-[#a1a1a6] uppercase tracking-widest mb-2 md:mb-0">Total Estimado</p>
-                        <p class="text-6xl md:text-5xl font-black text-white">${{ total_precio|floatformat:2|default:"0.00" }}</p>
+                        <p class="text-sm font-bold text-[#a1a1a6] uppercase tracking-widest mb-1 md:mb-0">Total Estimado</p>
+                        <p class="text-4xl md:text-5xl font-black text-white">${{ total_precio|floatformat:2|default:"0.00" }}</p>
                     </div>
-                    <a href="{% url 'procesar_pedido' %}" class="btn-confirm py-6 px-8 uppercase text-xl md:text-xs tracking-widest shadow-lg active:scale-95 transition-transform text-center w-full md:w-auto">
+                    <a href="{% url 'procesar_pedido' %}" class="btn-confirm py-5 px-8 uppercase text-sm tracking-widest shadow-lg active:scale-95 transition-transform text-center w-full md:w-auto">
                         Confirmar Pedido
                     </a>
                 </div>
                 
             {% else %}
-                <div class="text-center py-20 bg-[#1c1c1e] rounded-[32px] border border-dashed border-white/10">
-                    <p class="text-xl md:text-base text-[#a1a1a6] font-medium italic">No hay productos en el pedido.</p>
+                <div class="text-center py-20 bg-[#1c1c1e] rounded-[24px] border border-dashed border-white/10">
+                    <p class="text-base text-[#a1a1a6] font-medium italic">No hay productos en el pedido.</p>
                 </div>
             {% endif %}
         </div>
