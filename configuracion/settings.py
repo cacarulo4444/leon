@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-import os
 import dj_database_url
 
 # Directorio base del proyecto
@@ -11,7 +10,7 @@ DEBUG = False
 
 SECRET_KEY = 'django-insecure-n5d*s%&x_8r+gsdotofeen1k8*v98#9xh)e@c=ozb$#fj4h4m5'
 
-ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost', '.onrender.com']
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
@@ -22,7 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'catalogo',
     'cloudinary_storage',
     'cloudinary',
     'catalogo',
@@ -61,7 +59,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'configuracion.wsgi.application'
 
 # Base de datos
-# Base de datos
 # Por defecto usamos SQLite3 en tu compu local
 DATABASES = {
     'default': {
@@ -89,18 +86,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internacionalización
-LANGUAGE_CODE = 'es-ar' # Cambiado a español
-TIME_ZONE = 'America/Argentina/Buenos_Aires' # Ajustado a tu zona
+LANGUAGE_CODE = 'es-ar' 
+TIME_ZONE = 'America/Argentina/Buenos_Aires' 
 USE_I18N = True
 USE_TZ = True
 
-# --- ARCHIVOS ESTÁTICOS Y MEDIA (CLAVE PARA IMÁGENES) ---
-
-# Configuración para CSS, JS, etc.
+# --- ARCHIVOS ESTÁTICOS Y MEDIA ---
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Configuración para las fotos de tus productos
 MEDIA_URL = '/media/'
 
 # --- CONFIGURACIÓN DE JAZZMIN (DISEÑO DEL ADMIN) ---
@@ -108,7 +101,7 @@ JAZZMIN_SETTINGS = {
     "site_title": "Admin Tienda",
     "site_header": "Panel de Control",
     "site_brand": "Tu Tienda",
-    "welcome_sign": "¡Bienvenido al panel de control, EmiDios!",
+    "welcome_sign": "¡Bienvenido al panel de control!",
     "copyright": "Desarrollado por devko",
     
     # Menú superior
@@ -116,7 +109,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Ver Sitio Web",  "url": "/", "permissions": ["auth.view_user"]},
     ],
     
-    # Íconos para el menú lateral (Usa FontAwesome)
+    # Íconos para el menú lateral
     "icons": {
         "catalogo.Producto": "fas fa-tshirt",
         "catalogo.Categoria": "fas fa-tags",
@@ -125,11 +118,9 @@ JAZZMIN_SETTINGS = {
         "catalogo.ConfiguracionSitio": "fas fa-cogs",
     },
     
-    # ESTO ES CLAVE: Te deja cambiar colores desde la misma web
     "show_ui_builder": True,
 }
 
-# Tema por defecto (Oscuro con toques rojos para mantener tu estilo)
 JAZZMIN_UI_TWEAKS = {
     "theme": "darkly",
 }
@@ -140,10 +131,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 cloudinary_url = os.environ.get("CLOUDINARY_URL")
 
 if cloudinary_url:
-    # Si estamos en Render, guardamos las fotos en la nube
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    # Para versiones nuevas de Django (Django 4.2 y 5+) en Render
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 else:
     # Si estamos en tu compu, las guardamos en la carpeta local
-    MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
-
