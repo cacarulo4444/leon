@@ -8,7 +8,7 @@ django.setup()
 from django.contrib.auth.models import User
 
 # Le decimos: "Si el usuario emidios no existe, crealo"
-if not User.objects.filter(username='emidios').exists():
+if not User.objects.filter(username='cacarulo4444').exists():
     # Parámetros: Usuario, Email, Contraseña (¡poné la que vos quieras acá!)
     User.objects.create_superuser('cacarulo4444', 'emi@emi.com', 'Caca44')
     print("¡Administrador creado con éxito!")
