@@ -23,6 +23,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'catalogo',
+    'cloudinary_storage',
+    'cloudinary',
+    'catalogo',
 ]
 
 MIDDLEWARE = [
@@ -131,7 +134,16 @@ JAZZMIN_UI_TWEAKS = {
     "theme": "darkly",
 }
 
-# Aquí le decimos a Django que busque en la carpeta "productos" que tienes en la nube
-MEDIA_ROOT = os.path.join(BASE_DIR, 'productos')
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- CONFIGURACIÓN DE IMÁGENES (CLOUDINARY) ---
+cloudinary_url = os.environ.get("CLOUDINARY_URL")
+
+if cloudinary_url:
+    # Si estamos en Render, guardamos las fotos en la nube
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    # Si estamos en tu compu, las guardamos en la carpeta local
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+
