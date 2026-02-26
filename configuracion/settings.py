@@ -59,7 +59,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'configuracion.wsgi.application'
 
 # Base de datos
-# Por defecto usamos SQLite3 en tu compu local
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -68,7 +67,6 @@ DATABASES = {
 }
 
 # 🚀 EL TRUCO PARA RENDER: 
-# Si Render nos pasa una "DATABASE_URL" secreta, la usamos y pisamos la anterior
 database_url = os.environ.get("DATABASE_URL")
 if database_url:
     DATABASES['default'] = dj_database_url.config(
@@ -94,6 +92,10 @@ USE_TZ = True
 # --- ARCHIVOS ESTÁTICOS Y MEDIA ---
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# ESTA LÍNEA PERMITE AGREGAR TUS PROPIOS DISEÑOS CSS:
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
 MEDIA_URL = '/media/'
 
 # --- CONFIGURACIÓN DE JAZZMIN (DISEÑO DEL ADMIN) ---
@@ -119,6 +121,8 @@ JAZZMIN_SETTINGS = {
     },
     
     "show_ui_builder": True,
+    # ESTA LÍNEA CONECTA TU PARCHE DE LETRAS NEGRAS:
+    "custom_css": "css/admin_fix.css",
 }
 
 JAZZMIN_UI_TWEAKS = {
