@@ -1,11 +1,16 @@
 from django.contrib import admin
-from .models import Categoria, Producto, Pedido, Talle, ConfiguracionSitio
+# IMPORTANTE: Asegurate de que DetallePedido sea el nombre correcto de tu tabla en models.py
+from .models import Categoria, Producto, Pedido, Talle, ConfiguracionSitio, DetallePedido 
 
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
     list_display = ('nombre',)
-    # ESTO ES VITAL: Le dice a Django por qué campo buscar cuando tipeás
-    search_fields = ('nombre',) 
+    search_fields = ('nombre',)
+
+@admin.register(Talle)
+class TalleAdmin(admin.ModelAdmin):
+    list_display = ('nombre',)
+    search_fields = ('nombre',) # Le agregamos buscador a los talles por las dudas
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
@@ -14,18 +19,28 @@ class ProductoAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'descripcion')
     list_editable = ('precio', 'en_oferta') 
     
-    # LA MAGIA PREDICTIVA: Convierte el desplegable en un buscador con autocompletado
+    # Buscador predictivo para categoría
     autocomplete_fields = ['categoria'] 
+    
+    # ¡LA MAGIA DE LOS TALLES!: Crea dos columnas limpias para pasar talles de un lado a otro.
+    # (Asumo que en tu models.py el campo de la relación se llama 'talles')
+    filter_horizontal = ('talles',) 
     
     list_per_page = 20
 
+# --- TABLITA INTERNA DE PRODUCTOS PARA EL PEDIDO ---
+class DetallePedidoInline(admin.TabularInline):
+    model = DetallePedido  # <-- Ajustá este nombre si tu modelo se llama distinto
+    extra = 0
+
+# --- PANTALLA PRINCIPAL DE PEDIDOS ---
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
-    # Asumiendo los campos clásicos de un pedido (ajustalo si tus campos se llaman distinto)
-    # list_display = ('id', 'fecha', 'total', 'estado') 
-    # list_filter = ('estado', 'fecha')
-    # search_fields = ('id', 'email_cliente')
-    pass # Dejalo así por ahora si no tocamos tu modelo de Pedidos todavía
+    list_display = ('nombre', 'apellido', 'telefono', 'direccion', 'total')
+    search_fields = ('nombre', 'apellido', 'telefono')
+    
+    # Inyectamos los productos adentro de la ficha del pedido
+    inlines = [DetallePedidoInline]
 
-admin.site.register(Talle)
+# Configuraciones extra
 admin.site.register(ConfiguracionSitio)
